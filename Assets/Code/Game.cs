@@ -54,10 +54,12 @@ public class Game : MonoBehaviour
         );
     }
 
-    private void PerformAttack(Player source, Player consumer) {
+    private void PerformAttack(Player source, PlayerPanelHierarchy sourcePanel, Player consumer, PlayerPanelHierarchy consumerPanel) {
         if (!source.IsAlive() || !consumer.IsAlive()) {
             return;
         }
+
+        sourcePanel.character.SetTrigger("Attack");
 
         battleArea.Attack(source, consumer);
 
@@ -66,11 +68,11 @@ public class Game : MonoBehaviour
     }
 
     public void PerformLeftPlayerAttack() {
-        PerformAttack(this.leftPlayer, this.rightPlayer);
+        PerformAttack(this.leftPlayer, leftPanel, this.rightPlayer, rightPanel);
     }
 
     public void PerformRightPlayerAttack()
     {
-        PerformAttack(this.rightPlayer, this.leftPlayer);
+        PerformAttack(this.rightPlayer, rightPanel, this.leftPlayer, leftPanel);
     }
 }

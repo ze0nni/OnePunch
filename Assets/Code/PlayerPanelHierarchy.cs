@@ -10,10 +10,12 @@ public class PlayerPanelHierarchy : MonoBehaviour
     public Animator character;
     public GameObject statPrefab;
 
+    private Player currentPlayer;
     private List<StatPanel> panels = new List<StatPanel>();
 
     internal void SetNewPlayer(Player currentPlayer, Data gameData)
     {
+        this.currentPlayer = currentPlayer;
         ClearPanel();
 
         foreach (var stat in gameData.stats) {
@@ -23,9 +25,12 @@ public class PlayerPanelHierarchy : MonoBehaviour
         foreach (var buff in currentPlayer.buffs) {
             InsertStatPanel(buff.icon, () => buff.title);
         }
+
+        UpdateStats();
     }
 
     public void UpdateStats() {
+        character.SetInteger("Health", (int)Math.Ceiling(currentPlayer.Stat(0)));
         foreach (var s in panels) {
             s.Update();
         }
