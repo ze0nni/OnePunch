@@ -35,8 +35,8 @@ public class Game : MonoBehaviour
         this.leftPlayer = leftPlayer;
         this.rightPlayer = rightPlayer;
 
-        this.leftPanel.SetNewPlayer(leftPlayer);
-        this.rightPanel.SetNewPlayer(rightPlayer);
+        this.leftPanel.SetNewPlayer(leftPlayer, gameData);
+        this.rightPanel.SetNewPlayer(rightPlayer, gameData);
     }
 
     public void StartWithBuffs() {
@@ -60,6 +60,9 @@ public class Game : MonoBehaviour
         }
 
         battleArea.Attack(source, consumer);
+
+        this.leftPanel.UpdateStats();
+        this.rightPanel.UpdateStats();
     }
 
     public void PerformLeftPlayerAttack() {
