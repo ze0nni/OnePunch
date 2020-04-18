@@ -24,7 +24,7 @@ public class Game : MonoBehaviour
     private Player NewPlayer(bool withBuff) {
         return new Player(
             gameData.stats,
-            gameData.buffs.Where(_ => withBuff && Random.value >= 0.5f)
+            gameData.buffs.Where(_ => withBuff && Random.value > 0.5f).ToArray()
         );
     }
 

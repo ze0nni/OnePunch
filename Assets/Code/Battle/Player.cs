@@ -10,8 +10,8 @@ public class Player : Fighter
     public readonly Buff[] buffs;
 
     public Player(
-        IEnumerable<Stat> stats,
-        IEnumerable<Buff> buffs
+        ICollection<Stat> stats,
+        ICollection<Buff> buffs
     ) {
         this.buffs = buffs.ToArray();
 
