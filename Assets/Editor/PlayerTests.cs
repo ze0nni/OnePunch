@@ -123,4 +123,22 @@ class PlayerTests
 
         Assert.AreEqual(18, player.Stat(0));
     }
+
+    [Test]
+    public void isAlive_changed_on_hit() {
+        var player = new Player(
+            new Stat[] {
+                    new Stat() { id = 0, value = 10 },
+            },
+            new Buff[] { }
+        );
+
+        Assert.IsTrue(player.IsAlive());
+
+        player.Hit(5, out var _);
+        Assert.IsTrue(player.IsAlive());
+
+        player.Hit(5, out var _);
+        Assert.IsFalse(player.IsAlive());
+    }
 }

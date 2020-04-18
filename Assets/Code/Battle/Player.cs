@@ -34,6 +34,10 @@ public class Player : Fighter
         return newValue;
     }
 
+    public bool IsAlive() {
+        return Stat(0) > 0;
+    }
+
     public float Damage()
     {
         return Stat(2);
