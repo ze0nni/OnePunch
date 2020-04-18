@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 public class Player : Fighter
 {
     readonly Dictionary<int, float> stats = new Dictionary<int, float>();
-    readonly Buff[] buffs;
+    public readonly Buff[] buffs;
 
     public Player(
         IEnumerable<Stat> stats,
