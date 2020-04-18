@@ -59,4 +59,68 @@ class PlayerTests
         Assert.AreEqual(30, player.Stat(2));
         Assert.AreEqual(40, player.Stat(3));
     }
+
+    [Test]
+    public void decrement_stat_0_on_hit() {
+        var player = new Player(
+            new Stat[] {
+                    new Stat() { id = 0, value = 10 },
+            },
+            new Buff[] { }
+        );
+
+        player.Hit(5, out var _);
+
+        Assert.AreEqual(5, player.Stat(0));
+    }
+
+    [Test]
+    public void player_damage_from_stat_2() {
+        var player = new Player(
+            new Stat[] {
+                    new Stat() { id = 2, value = 10 },
+            },
+            new Buff[] {
+                new Buff() {
+                    stats = new BuffStat[] {
+                        new BuffStat() { statId = 2, value = 5}
+                    }
+                }
+            }
+        );
+
+        Assert.AreEqual(15, player.Damage());
+    }
+
+    [Test]
+    public void absorb_damage_with_stat_1()
+    {
+        var player = new Player(
+            new Stat[] {
+                    new Stat() { id = 0, value = 10 },
+                    new Stat() { id = 1, value = 20 },
+            },
+            new Buff[] { }
+        );
+
+        player.Hit(5, out var releasedDamage);
+
+        Assert.AreEqual(4, releasedDamage);
+        Assert.AreEqual(6, player.Stat(0));
+    }
+
+    [Test]
+    public void hill_using_stat_3() {
+        var player = new Player(
+            new Stat[] {
+                    new Stat() { id = 0, value = 10 },
+                    new Stat() { id = 3, value = 80 },
+            },
+            new Buff[] { }
+        );
+
+        player.ConsumeMeat(10);
+
+        Assert.AreEqual(18, player.Stat(0));
+    }
 }
