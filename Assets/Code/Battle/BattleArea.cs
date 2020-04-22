@@ -2,6 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct OnBeforeHitResult {
+    public float currentDamage;
+    public bool abort;
+
+    public OnBeforeHitResult(float currentDamage, bool abort)
+    {
+        this.currentDamage = currentDamage;
+        this.abort = abort;
+    }
+}
+public interface BattleAspect {
+    OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, float baseDamage, OnBeforeHitResult current);
+}
 sealed public class BattleArea
 {
     public void Attack(

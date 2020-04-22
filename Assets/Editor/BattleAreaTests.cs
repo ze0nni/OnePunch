@@ -90,6 +90,16 @@ public class BattleAreaTests
 
 internal class TestFighter : Fighter
 {
+    public delegate float GetStat(int statId);
+
+    public GetStat getStat = null;
+
+    public float Stat(int statId)
+    {
+        if (null == getStat) throw new System.NotImplementedException();
+        return getStat.Invoke(statId);
+    }
+
     public delegate float OnDamage();
 
     public OnDamage onDamage;

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public interface Fighter
 {
+    float Stat(int statId);
+
     float Damage();
 
     void Hit(float damage, out float releasedDamage);
