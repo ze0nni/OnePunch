@@ -40,9 +40,8 @@ namespace Battle
 
         public Buff[] Produce(int amount)
         {
-            var outputSize = Math.Min(amount, buffs.Length);
-            var output = new Buff[outputSize];
-            for (var i = 0; i < outputSize; i++) {
+            var output = new Buff[amount];
+            for (var i = 0; i < amount; i++) {
                 output[i] = buffs[UnityEngine.Random.Range(0, buffs.Length)];
             }
             return output;
