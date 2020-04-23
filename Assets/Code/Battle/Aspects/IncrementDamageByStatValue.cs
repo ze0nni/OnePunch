@@ -21,5 +21,10 @@ namespace Battle.Aspects
 
             return result;
         }
+
+        public void OnHitHappened(Fighter source, Fighter consumer, float baseDamage)
+        {
+            //
+        }
     }
 }

@@ -6,24 +6,29 @@ using System.Threading.Tasks;
 
 namespace Battle.Aspects
 {
-    public class AbsorbDamageByStatValue : BattleAspect
+    public class RestoreHealthFromDamageByStatValue : BattleAspect
     {
-        readonly private int statId;
+        readonly int statId;
 
-        public AbsorbDamageByStatValue(int statId)
+        public RestoreHealthFromDamageByStatValue(int statId)
         {
             this.statId = statId;
         }
 
         public OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, float baseDamage, OnBeforeHitResult result)
         {
-            result.currentDamage = (result.currentDamage * (100 - consumer.Stat(statId))) / 100f;
+            
             return result;
         }
 
         public void OnHitHappened(Fighter source, Fighter consumer, float baseDamage)
         {
-            //
+            var statValue = source.Stat(statId);
+            if (statValue > 0)
+            {
+                var hillValue = (baseDamage * statValue) / 100f;
+                source.Hill(hillValue);
+            }
         }
     }
 }

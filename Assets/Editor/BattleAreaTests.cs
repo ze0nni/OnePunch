@@ -120,6 +120,16 @@ internal class TestFighter : Fighter
         onHit.Invoke(damage, out releasedDamage);
     }
 
+    public delegate void OnHill(float value);
+
+    public OnHill onHill;
+
+    public void Hill(float value)
+    {
+        if (null == onHill) throw new System.NotImplementedException();
+        onHill.Invoke(value);
+    }
+
     public delegate void OnConsumeMeat(float releasedDamage);
 
     public OnConsumeMeat onConsumeMeat;

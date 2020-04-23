@@ -10,5 +10,7 @@ public interface Fighter
 
     void Hit(float damage, out float releasedDamage);
 
+    void Hill(float value);
+
     void ConsumeMeat(float releasedDamage);
 }
