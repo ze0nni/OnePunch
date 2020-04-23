@@ -15,14 +15,14 @@ namespace Battle.Aspects
             this.statId = statId;
         }
 
-        public OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, OnBeforeHitResult result)
+        public OnBeforeHitResult OnBeforeHit(BattleArea area, Fighter source, Fighter consumer, OnBeforeHitResult result)
         {
             result.currentDamage += source.Stat(statId);
 
             return result;
         }
 
-        public void OnHitHappened(Fighter source, Fighter consumer, float baseDamage)
+        public void OnHitHappened(BattleArea area, Fighter source, Fighter consumer, float baseDamage)
         {
             //
         }

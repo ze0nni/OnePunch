@@ -4,9 +4,16 @@ using UnityEngine;
 
 namespace Battle
 {   
-    sealed public class CommonBattleArea
+    public interface BattleArea {
+        BattleAspect Aspect { get; }
+
+        void Attack(Fighter source, Fighter consumer);
+    }
+
+    sealed public class CommonBattleArea: BattleArea
     {
         private readonly BattleAspect aspect;
+        public BattleAspect Aspect { get => this.aspect; }
 
         public CommonBattleArea(
             BattleAspect aspect
@@ -20,7 +27,7 @@ namespace Battle
             Fighter consumer
         )
         {
-            var damageResult = aspect.OnBeforeHit(source, consumer, new OnBeforeHitResult(0, false));
+            var damageResult = aspect.OnBeforeHit(this, source, consumer, new OnBeforeHitResult(0, false));
             if (damageResult.abort) {
                 return;
             }
@@ -28,7 +35,7 @@ namespace Battle
 
             consumer.Hit(damageResult.currentDamage);
 
-            aspect.OnHitHappened(source, consumer, damageResult.currentDamage);
+            aspect.OnHitHappened(this, source, consumer, damageResult.currentDamage);
         }
     }
 

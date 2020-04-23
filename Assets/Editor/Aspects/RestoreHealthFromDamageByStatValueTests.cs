@@ -19,7 +19,7 @@ namespace Battle.Aspects
             var hillCalls = new List<float>();
             source.onHill = x => hillCalls.Add(x);
 
-            aspect.OnHitHappened(source, null, 100);
+            aspect.OnHitHappened(null, source, null, 100);
 
             Assert.AreEqual(
                 new float[] { },
@@ -38,7 +38,7 @@ namespace Battle.Aspects
             var hillCalls = new List<float>();
             source.onHill = x => hillCalls.Add(x);
 
-            aspect.OnHitHappened(source, null, 10);
+            aspect.OnHitHappened(null, source, null, 10);
 
             Assert.AreEqual(
                 new float[] { 2 },

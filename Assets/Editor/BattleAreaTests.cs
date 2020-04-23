@@ -35,7 +35,7 @@ namespace Battle
             var area = new CommonBattleArea(new BattleAspects(
                 new TestAspect()
                 {
-                    onBeforeHitFunc = (s, c, result) =>
+                    onBeforeHitFunc = (a, s, c, result) =>
                     {
                         result.currentDamage += 1;
                         return result;
@@ -63,7 +63,7 @@ namespace Battle
             var area = new CommonBattleArea(new BattleAspects(
                 new TestAspect()
                 {
-                    onBeforeHitFunc = (s, c, result) =>
+                    onBeforeHitFunc = (a, s, c, result) =>
                     {
                         result.abort = true;
                         return result;
@@ -85,7 +85,7 @@ namespace Battle
             var area = new CommonBattleArea(new BattleAspects(
                 new TestAspect()
                 {
-                    onBeforeHitFunc = (s, c, result) =>
+                    onBeforeHitFunc = (a, s, c, result) =>
                     {
                         result.currentDamage += 1;
                         return result;
@@ -93,7 +93,7 @@ namespace Battle
                 },
                 new TestAspect()
                 {
-                    onBeforeHitFunc = (s, c, result) =>
+                    onBeforeHitFunc = (a, s, c, result) =>
                     {
                         result.currentDamage += 2;
                         return result;
@@ -123,11 +123,11 @@ namespace Battle
             var area = new CommonBattleArea(new BattleAspects(
                 new TestAspect()
                 {
-                    onBeforeHitFunc = (s, c, result) =>
+                    onBeforeHitFunc = (a, s, c, result) =>
                     {
                         return result;
                     },
-                    onHitHappenedFunc = (s, c, damage) =>
+                    onHitHappenedFunc = (a, s, c, damage) =>
                     {
                         calls.Add(damage);
                     }
@@ -149,18 +149,18 @@ namespace Battle
 
     internal class TestAspect : BattleAspect
     {
-        public delegate OnBeforeHitResult OnBeforeHitFunc(Fighter source, Fighter consumer, OnBeforeHitResult result);
+        public delegate OnBeforeHitResult OnBeforeHitFunc(BattleArea area, Fighter source, Fighter consumer, OnBeforeHitResult result);
         public OnBeforeHitFunc onBeforeHitFunc;
-        public OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, OnBeforeHitResult result)
+        public OnBeforeHitResult OnBeforeHit(BattleArea area, Fighter source, Fighter consumer, OnBeforeHitResult result)
         {
-            return onBeforeHitFunc.Invoke(source, consumer, result);
+            return onBeforeHitFunc.Invoke(area, source, consumer, result);
         }
 
-        public delegate void OnHitHappenedFunc(Fighter source, Fighter consumer, float baseDamage);
+        public delegate void OnHitHappenedFunc(BattleArea area, Fighter source, Fighter consumer, float baseDamage);
         public OnHitHappenedFunc onHitHappenedFunc;
-        public void OnHitHappened(Fighter source, Fighter consumer, float damage)
+        public void OnHitHappened(BattleArea area, Fighter source, Fighter consumer, float damage)
         {
-            onHitHappenedFunc?.Invoke(source, consumer, damage);
+            onHitHappenedFunc?.Invoke(area, source, consumer, damage);
         }
     }
 

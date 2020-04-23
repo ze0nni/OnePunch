@@ -12,9 +12,9 @@ namespace Battle
 
     public interface BattleAspect
     {
-        OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, OnBeforeHitResult result);
+        OnBeforeHitResult OnBeforeHit(BattleArea area, Fighter source, Fighter consumer, OnBeforeHitResult result);
 
-        void OnHitHappened(Fighter source, Fighter consumer, float damage);
+        void OnHitHappened(BattleArea area, Fighter source, Fighter consumer, float damage);
     }
 
     public struct OnBeforeHitResult
@@ -38,12 +38,12 @@ namespace Battle
             this.aspects = aspects;
         }
 
-        public OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, OnBeforeHitResult result)
+        public OnBeforeHitResult OnBeforeHit(BattleArea area, Fighter source, Fighter consumer, OnBeforeHitResult result)
         {
             var damageResult = new OnBeforeHitResult(0, false);
             foreach (var a in aspects)
             {
-                damageResult = a.OnBeforeHit(source, consumer, damageResult);
+                damageResult = a.OnBeforeHit(area, source, consumer, damageResult);
                 if (damageResult.abort)
                 {
                     return damageResult;
@@ -52,11 +52,11 @@ namespace Battle
             return damageResult;
         }
 
-        public void OnHitHappened(Fighter source, Fighter consumer, float damage)
+        public void OnHitHappened(BattleArea area, Fighter source, Fighter consumer, float damage)
         {
             foreach (var a in aspects)
             {
-                a.OnHitHappened(source, consumer, damage);
+                a.OnHitHappened(area, source, consumer, damage);
             }
         }
     }

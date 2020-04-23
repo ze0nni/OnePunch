@@ -17,7 +17,7 @@ namespace Battle.Aspects
             var consumer = new TestFighter();
             consumer.getStat = (id) => 0;
 
-            var result = aspect.OnBeforeHit(null, consumer, new OnBeforeHitResult(100, false));
+            var result = aspect.OnBeforeHit(null, null, consumer, new OnBeforeHitResult(100, false));
 
             Assert.AreEqual(
                 new OnBeforeHitResult(100, false),
@@ -33,7 +33,7 @@ namespace Battle.Aspects
             var consumer = new TestFighter();
             consumer.getStat = (id) => 30;
 
-            var result = aspect.OnBeforeHit(null, consumer, new OnBeforeHitResult(100, false));
+            var result = aspect.OnBeforeHit(null, null, consumer, new OnBeforeHitResult(100, false));
 
             Assert.AreEqual(
                 new OnBeforeHitResult(70, false),
