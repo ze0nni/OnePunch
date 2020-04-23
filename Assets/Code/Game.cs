@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Battle;
+using Battle.Aspects;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,71 +10,74 @@ public class Game : MonoBehaviour
     public PlayerPanelHierarchy leftPanel;
     public PlayerPanelHierarchy rightPanel;
 
-    private Data gameData;
-
-    readonly private BattleArea battleArea = new BattleArea();
-    private Player leftPlayer;
-    private Player rightPlayer;
+    private PlayerFactory playerFactory;
+    private BattleArea battleArea;
 
     void Start()
     {
-        this.gameData = JsonUtility.FromJson<Data>(Resources.Load<TextAsset>("data").text);
+        #region Всю эту инициализацию можно в будущем заменить на DI-контейнер
 
-        StartWithBuffs();
-    }
+        var gameData = JsonUtility.FromJson<Data>(Resources.Load<TextAsset>("data").text);
 
-    private Player NewPlayer(bool withBuff) {
-        return new Player(
-            gameData.stats,
-            gameData.buffs.Where(_ => withBuff && Random.value > 0.5f).ToArray()
-        );
+        this.playerFactory = new CommonPlayerFactory(0, StatsFactoryFromConfig.Of(gameData));
+        this.battleArea = new CommonBattleArea(new BattleAspects(
+            new IncrementDamageByStatValue(2),
+            new AbsorbDamageByStatValue(1),
+            new RestoreHealthFromDamageByStatValue(3)
+        ));
+        #endregion
+
+        StartWithoutBuffs();
     }
 
     private void StartBattle(
         Player leftPlayer,
         Player rightPlayer
-    ) {
-        this.leftPlayer = leftPlayer;
-        this.rightPlayer = rightPlayer;
-
-        this.leftPanel.SetNewPlayer(leftPlayer, gameData);
-        this.rightPanel.SetNewPlayer(rightPlayer, gameData);
+    )
+    {
+        this.leftPanel.SetNewPlayer(leftPlayer);
+        this.rightPanel.SetNewPlayer(rightPlayer);
     }
 
     public void StartWithBuffs() {
         StartBattle(
-            NewPlayer(true),
-            NewPlayer(true)
+            playerFactory.Produce(true),
+            playerFactory.Produce(true)
         );
     }
 
     public void StartWithoutBuffs()
     {
         StartBattle(
-            NewPlayer(false),
-            NewPlayer(false)
+            playerFactory.Produce(false),
+            playerFactory.Produce(false)
         );
     }
 
-    private void PerformAttack(Player source, PlayerPanelHierarchy sourcePanel, Player consumer, PlayerPanelHierarchy consumerPanel) {
-        if (!source.IsAlive() || !consumer.IsAlive()) {
+    private void PerformAttack(PlayerPanelHierarchy sourcePanel, PlayerPanelHierarchy consumerPanel) {
+        var source = sourcePanel.currentPlayer;
+        var consumer = consumerPanel.currentPlayer;
+
+        if (source.Health <= 0  || consumer.Health <= 0) {
             return;
         }
-
+    
         sourcePanel.character.SetTrigger("Attack");
-
         battleArea.Attack(source, consumer);
 
-        this.leftPanel.UpdateStats();
-        this.rightPanel.UpdateStats();
+        // Вызов анимации и UpdateStats в идеале нужно сделать реактивными биндингами
+        // Что бы статы рассылали уведомелния при изменении
+        // хотя у обоих подходов есть плюсы и минусы
+        sourcePanel.UpdateStats();
+        consumerPanel.UpdateStats();
     }
 
     public void PerformLeftPlayerAttack() {
-        PerformAttack(this.leftPlayer, leftPanel, this.rightPlayer, rightPanel);
+        PerformAttack(leftPanel, rightPanel);
     }
 
     public void PerformRightPlayerAttack()
     {
-        PerformAttack(this.rightPlayer, rightPanel, this.leftPlayer, leftPanel);
+        PerformAttack(rightPanel, leftPanel);
     }
 }

@@ -28,6 +28,8 @@ namespace Battle
             return this.stats.Get(statId);
         }
 
+        public Stats Stats { get => this.stats; }
+
         public void Hit(float damage)
         {
             if (damage < 0) {
@@ -45,4 +47,27 @@ namespace Battle
         }
     }
 
+    public interface PlayerFactory {
+        Player Produce(bool withBuffs);
+    }
+
+    public sealed class CommonPlayerFactory : PlayerFactory
+    {
+        readonly int healthStatId;
+        readonly StatsFactory statsFactory;
+
+        public CommonPlayerFactory(int healthStatId, StatsFactory factory)
+        {
+            this.healthStatId = healthStatId;
+            this.statsFactory = factory;
+        }
+
+        public Player Produce(bool withBuffs)
+        {
+            return new Player(
+                healthStatId,
+                statsFactory.Produce(withBuffs)
+            );
+        }
+    }
 }

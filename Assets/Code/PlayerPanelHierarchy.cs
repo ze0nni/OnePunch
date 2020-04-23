@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Battle;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,19 +11,28 @@ public class PlayerPanelHierarchy : MonoBehaviour
     public Animator character;
     public GameObject statPrefab;
 
-    private Player currentPlayer;
+    public Player currentPlayer { get; private set; }
     private List<StatPanel> panels = new List<StatPanel>();
 
-    internal void SetNewPlayer(Player currentPlayer, Data gameData)
+    internal void SetNewPlayer(Player currentPlayer)
     {
         this.currentPlayer = currentPlayer;
         ClearPanel();
 
-        foreach (var stat in gameData.stats) {
-            InsertStatPanel(stat.icon, () => currentPlayer.Stat(stat.id).ToString());
+        foreach (var stat in currentPlayer.Stats.Stats)
+        {
+            if (0 == stat.id)
+            {
+                InsertStatPanel(stat.icon, () => currentPlayer.Health.ToString());
+            }
+            else
+            {
+                InsertStatPanel(stat.icon, () => currentPlayer.Stat(stat.id).ToString());
+            }
         }
 
-        foreach (var buff in currentPlayer.buffs) {
+        foreach (var buff in currentPlayer.Stats.Buffs)
+        {
             InsertStatPanel(buff.icon, () => buff.title);
         }
 
@@ -30,7 +40,7 @@ public class PlayerPanelHierarchy : MonoBehaviour
     }
 
     public void UpdateStats() {
-        character.SetInteger("Health", (int)Math.Ceiling(currentPlayer.Stat(0)));
+        character.SetInteger("Health", (int)Math.Ceiling(currentPlayer.Health));
         foreach (var s in panels) {
             s.Update();
         }

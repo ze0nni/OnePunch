@@ -100,6 +100,10 @@ namespace Battle
         {
             readonly Dictionary<int, float> stats = new Dictionary<int, float>();
 
+            public List<Stat> Stats => throw new NotImplementedException();
+
+            public List<Buff> Buffs => throw new NotImplementedException();
+
             public float Get(int statId)
             {
                 return this.stats[statId];
