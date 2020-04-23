@@ -13,7 +13,7 @@ namespace Battle
         [Test]
         public void Test_hit_with_zero_damage()
         {
-            var area = new BattleArea();
+            var area = new CommonBattleArea(new BattleAspects());
 
             var source = new TestFighter();
             var consumer = new TestFighter();
@@ -32,7 +32,7 @@ namespace Battle
         [Test]
         public void Test_hit_with_1_damage()
         {
-            var area = new BattleArea(
+            var area = new CommonBattleArea(new BattleAspects(
                 new TestAspect()
                 {
                     onBeforeHitFunc = (s, c, result) =>
@@ -41,7 +41,7 @@ namespace Battle
                         return result;
                     }
                 }
-            );
+            ));
 
             var source = new TestFighter();
             var consumer = new TestFighter();
@@ -60,7 +60,7 @@ namespace Battle
         [Test]
         public void Test_no_hit_if_aborted()
         {
-            var area = new BattleArea(
+            var area = new CommonBattleArea(new BattleAspects(
                 new TestAspect()
                 {
                     onBeforeHitFunc = (s, c, result) =>
@@ -69,7 +69,7 @@ namespace Battle
                         return result;
                     }
                 }
-            );
+            ));
 
             var consumer = new TestFighter();
 
@@ -82,7 +82,7 @@ namespace Battle
         [Test]
         public void Test_hit_with_3_damage()
         {
-            var area = new BattleArea(
+            var area = new CommonBattleArea(new BattleAspects(
                 new TestAspect()
                 {
                     onBeforeHitFunc = (s, c, result) =>
@@ -99,7 +99,7 @@ namespace Battle
                         return result;
                     }
                 }
-            );
+            ));
 
             var source = new TestFighter();
             var consumer = new TestFighter();
@@ -120,7 +120,7 @@ namespace Battle
         {
             var calls = new List<float>();
 
-            var area = new BattleArea(
+            var area = new CommonBattleArea(new BattleAspects(
                 new TestAspect()
                 {
                     onBeforeHitFunc = (s, c, result) =>
@@ -132,7 +132,7 @@ namespace Battle
                         calls.Add(damage);
                     }
                 }
-            );
+            ));
 
             var consumer = new TestFighter();
             consumer.onHit = (damage) => { };
