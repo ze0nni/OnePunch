@@ -8,7 +8,7 @@ public interface Fighter
 
     float Damage();
 
-    void Hit(float damage, out float releasedDamage);
+    void Hit(float damage);
 
     void Hill(float value);
 

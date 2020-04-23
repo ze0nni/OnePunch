@@ -10,81 +10,146 @@ using UnityEngine;
 public class BattleAreaTests
 {
     [Test]
-    public void Test_hit_with_damage() {
+    public void Test_hit_with_zero_damage() {
         var area = new BattleArea();
 
         var source = new TestFighter();
-        source.onDamage = () => 10;
-        source.onConsumeMeat = (_) => { };
-
-        List<float> damages = new List<float>();
         var consumer = new TestFighter();
-        consumer.onHit = (float damage, out float released) =>
-        {
-            damages.Add(damage);
-            released = 0;
-        };
+
+        var damages = new List<float>();
+        consumer.onHit = (damage) => { damages.Add(damage); };
 
         area.Attack(source, consumer);
 
         Assert.AreEqual(
-            new float[] { 10 },
+            new float[] { 0 },
             damages
         );
     }
 
     [Test]
-    public void Test_hill_with_released_damage() {
-        var area = new BattleArea();
+    public void Test_hit_with_1_damage()
+    {
+        var area = new BattleArea(
+            new TestAspect() {
+                onBeforeHitFunc = (s, c, result) => {
+                    result.currentDamage += 1;
+                    return result;
+                }
+            }
+        );
 
-        List<float> meats = new List<float>();
         var source = new TestFighter();
-        source.onDamage = () => 5;
-        source.onConsumeMeat = (releasedDamage) =>
-        {
-            meats.Add(releasedDamage);
-        };
-
-
         var consumer = new TestFighter();
-        consumer.onHit = (float damage, out float released) =>
-        {
-            released = damage;
-        };
+
+        var damages = new List<float>();
+        consumer.onHit = (damage) => { damages.Add(damage); };
 
         area.Attack(source, consumer);
 
         Assert.AreEqual(
-            new float[] { 5 },
-            meats
+            new float[] { 1 },
+            damages
         );
     }
 
     [Test]
-    public void Test_hill_50_percent_of_damage() {
-        var area = new BattleArea();
-
-        List<float> meats = new List<float>();
-        var source = new TestFighter();
-        source.onDamage = () => 5;
-        source.onConsumeMeat = (releasedDamage) =>
-        {
-            meats.Add(releasedDamage);
-        };
-
+    public void Test_no_hit_if_aborted()
+    {
+        var area = new BattleArea(
+            new TestAspect()
+            {
+                onBeforeHitFunc = (s, c, result) => {
+                    result.abort = true;
+                    return result;
+                }
+            }
+        );
 
         var consumer = new TestFighter();
-        consumer.onHit = (float damage, out float released) =>
-        {
-            released = damage / 2;
-        };
+
+        var damages = new List<float>();
+        consumer.onHit = (damage) => { Assert.Fail("Must never calls"); };
+
+        area.Attack(null, consumer);
+    }
+
+    [Test]
+    public void Test_hit_with_3_damage()
+    {
+        var area = new BattleArea(
+            new TestAspect()
+            {
+                onBeforeHitFunc = (s, c, result) => {
+                    result.currentDamage += 1;
+                    return result;
+                }
+            },
+            new TestAspect()
+            {
+                onBeforeHitFunc = (s, c, result) => {
+                    result.currentDamage += 2;
+                    return result;
+                }
+            }
+        );
+
+        var source = new TestFighter();
+        var consumer = new TestFighter();
+
+        var damages = new List<float>();
+        consumer.onHit = (damage) => { damages.Add(damage); };
 
         area.Attack(source, consumer);
 
         Assert.AreEqual(
-            new float[] { 2.5f },
-            meats
+            new float[] { 3 },
+            damages
         );
+    }
+
+    [Test]
+    public void Test_OnHitHappened_calls() {
+        var calls = new List<float>();
+
+        var area = new BattleArea(
+            new TestAspect() {
+                onBeforeHitFunc = (s, c, result) => {
+                    return result;
+                },
+                onHitHappenedFunc = (s,c,damage) => {
+                    calls.Add(damage);
+                }
+            }
+        );
+
+        var consumer = new TestFighter();
+        consumer.onHit = (damage) => { };
+
+        area.Attack(null, consumer);
+        area.Attack(null, consumer);
+
+        Assert.AreEqual(
+            new float[] { 0, 0 },
+            calls
+        );
+    }
+}
+
+internal class TestAspect : BattleAspect
+{
+    public delegate OnBeforeHitResult OnBeforeHitFunc(Fighter source, Fighter consumer, OnBeforeHitResult result);
+    public OnBeforeHitFunc onBeforeHitFunc;
+    public OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, OnBeforeHitResult result)
+    {
+        return onBeforeHitFunc.Invoke(source, consumer, result);
+    }
+
+    public delegate void OnHitHappenedFunc(Fighter source, Fighter consumer, float baseDamage);
+    public OnHitHappenedFunc onHitHappenedFunc;
+    public void OnHitHappened(Fighter source, Fighter consumer, float damage)
+    {
+        onHitHappenedFunc?.Invoke(source, consumer, damage);
     }
 }
 
@@ -110,14 +175,14 @@ internal class TestFighter : Fighter
         return onDamage.Invoke();
     }
 
-    public delegate void OnHit(float damage, out float releasedDamage);
+    public delegate void OnHit(float damage);
 
     public OnHit onHit;
 
-    public void Hit(float damage, out float releasedDamage)
+    public void Hit(float damage)
     {
         if (null == onHit) throw new System.NotImplementedException();
-        onHit.Invoke(damage, out releasedDamage);
+        onHit.Invoke(damage);
     }
 
     public delegate void OnHill(float value);
