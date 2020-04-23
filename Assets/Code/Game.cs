@@ -19,10 +19,14 @@ public class Game : MonoBehaviour
 
         var gameData = JsonUtility.FromJson<Data>(Resources.Load<TextAsset>("data").text);
 
+        // Здоровье персонажа берется из стата #0
         this.playerFactory = new CommonPlayerFactory(0, StatsFactoryFromConfig.Of(gameData));
         this.battleArea = new CommonBattleArea(new BattleAspects(
+            // Аспект считает нанесенный урон из стата #2
             new IncrementDamageByStatValue(2),
+            // Аспект считает "защиту" исходя из стата #1
             new AbsorbDamageByStatValue(1),
+            // Аспект для вампиризма, исходя из стата 3
             new RestoreHealthFromDamageByStatValue(3)
         ));
         #endregion

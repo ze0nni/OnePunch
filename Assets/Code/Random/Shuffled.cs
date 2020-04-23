@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Assets.Code.Random
 {
+    // Ленивый шафл Фишера-Йетса
+    // имеет сложность O(N), но за счет ленивости, мы можем не тасовать вест список до конца
     public class Shuffled<T> : IEnumerable<T>
     {
         readonly IEnumerable<T> origin;

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Battle
-{   
+{
+    // BattleArea вместе с BattleAspect позволяют что-то похожее на интерпритатор 
+
     public interface BattleArea {
         BattleAspect Aspect { get; }
 
@@ -31,7 +33,6 @@ namespace Battle
             if (damageResult.abort) {
                 return;
             }
-
 
             consumer.Hit(damageResult.currentDamage);
 
