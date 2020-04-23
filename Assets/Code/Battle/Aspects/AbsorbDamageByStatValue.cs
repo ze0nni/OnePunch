@@ -15,7 +15,7 @@ namespace Battle.Aspects
             this.statId = statId;
         }
 
-        public OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, float baseDamage, OnBeforeHitResult result)
+        public OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, OnBeforeHitResult result)
         {
             result.currentDamage = (result.currentDamage * (100 - consumer.Stat(statId))) / 100f;
             return result;

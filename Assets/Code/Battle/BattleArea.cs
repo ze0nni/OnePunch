@@ -13,7 +13,7 @@ public struct OnBeforeHitResult {
     }
 }
 public interface BattleAspect {
-    OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, float baseDamage, OnBeforeHitResult current);
+    OnBeforeHitResult OnBeforeHit(Fighter source, Fighter consumer, OnBeforeHitResult result);
     void OnHitHappened(Fighter source, Fighter consumer, float baseDamage);
 }
 sealed public class BattleArea
