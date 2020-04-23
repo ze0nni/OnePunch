@@ -6,11 +6,7 @@ public interface Fighter
 {
     float Stat(int statId);
 
-    float Damage();
-
     void Hit(float damage);
 
     void Hill(float value);
-
-    void ConsumeMeat(float releasedDamage);
 }
