@@ -5,140 +5,111 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-class PlayerTests
+namespace Battle
 {
-    [Test]
-    public void Init_player_with_stats() {
-        var player = new Player(
-            new Stat[] {
-                new Stat() { id = 0, value = 10 },
-                new Stat() { id = 1, value = 20 },
-                new Stat() { id = 2, value = 30 },
-                new Stat() { id = 3, value = 40 },
-            },
-            new Buff[] { }
-        );
 
-        Assert.AreEqual(10, player.Stat(0));
-        Assert.AreEqual(20, player.Stat(1));
-        Assert.AreEqual(30, player.Stat(2));
-        Assert.AreEqual(40, player.Stat(3));
-    }
-
-    [Test]
-    public void Init_player_with_buffs() {
-        var player = new Player(
-            new Stat[] {
-                new Stat() { id = 0, value = 20 },
-                new Stat() { id = 1, value = 10 },
-                new Stat() { id = 2, value = 10 },
-                new Stat() { id = 3, value = 10 },
-            },
-            new Buff[] {
-                new Buff() {
-                    stats = new BuffStat[] {
-                        new BuffStat() { statId = 0, value = -10 }
-                    }
-                },
-                new Buff() {
-                    stats = new BuffStat[] {
-                        new BuffStat() { statId = 1, value = 10 },
-                        new BuffStat() { statId = 2, value = 20 }
-                    }
-                },
-                new Buff() {
-                    stats = new BuffStat[] {
-                        new BuffStat() { statId = 3, value = 30 }
-                    }
-                }
-            }
-        );
-
-        Assert.AreEqual(10, player.Stat(0));
-        Assert.AreEqual(20, player.Stat(1));
-        Assert.AreEqual(30, player.Stat(2));
-        Assert.AreEqual(40, player.Stat(3));
-    }
-
-    [Test]
-    public void decrement_stat_0_on_hit() {
-        var player = new Player(
-            new Stat[] {
-                    new Stat() { id = 0, value = 10 },
-            },
-            new Buff[] { }
-        );
-
-        player.Hit(5, out var _);
-
-        Assert.AreEqual(5, player.Stat(0));
-    }
-
-    [Test]
-    public void player_damage_from_stat_2() {
-        var player = new Player(
-            new Stat[] {
-                    new Stat() { id = 2, value = 10 },
-            },
-            new Buff[] {
-                new Buff() {
-                    stats = new BuffStat[] {
-                        new BuffStat() { statId = 2, value = 5}
-                    }
-                }
-            }
-        );
-
-        Assert.AreEqual(15, player.Damage());
-    }
-
-    [Test]
-    public void absorb_damage_with_stat_1()
+    class PlayerTests
     {
-        var player = new Player(
-            new Stat[] {
-                    new Stat() { id = 0, value = 10 },
-                    new Stat() { id = 1, value = 20 },
-            },
-            new Buff[] { }
-        );
+        [Test]
+        public void InitPlayerWithStats()
+        {
+            var player = new Player(
+                0,
+                new TestStats().Set(0, 10).Set(1, 55).Set(2, 1)
+            );
 
-        player.Hit(5, out var releasedDamage);
+            Assert.AreEqual(10, player.Stat(0));
+            Assert.AreEqual(55, player.Stat(1));
+            Assert.AreEqual(1, player.Stat(2));
+        }
 
-        Assert.AreEqual(4, releasedDamage);
-        Assert.AreEqual(6, player.Stat(0));
-    }
+        [Test]
+        public void InitHealthFromStat()
+        {
+            var player = new Player(
+                3,
+                new TestStats().Set(3, 12)
+            );
 
-    [Test]
-    public void hill_using_stat_3() {
-        var player = new Player(
-            new Stat[] {
-                    new Stat() { id = 0, value = 10 },
-                    new Stat() { id = 3, value = 80 },
-            },
-            new Buff[] { }
-        );
+            Assert.AreEqual(12, player.Health);
+        }
 
-        player.ConsumeMeat(10);
+        [Test]
+        public void UpdateHealthOnHit() {
+            var player = new Player(
+                3,
+                new TestStats().Set(3, 12)
+            );
 
-        Assert.AreEqual(18, player.Stat(0));
-    }
+            player.Hit(4);
 
-    [Test]
-    public void isAlive_changed_on_hit() {
-        var player = new Player(
-            new Stat[] {
-                    new Stat() { id = 0, value = 10 },
-            },
-            new Buff[] { }
-        );
+            Assert.AreEqual(8, player.Health);
+        }
 
-        Assert.IsTrue(player.IsAlive());
+        [Test]
+        public void DoNotAcceptHealthLessThanZero()
+        {
+            var player = new Player(
+                3,
+                new TestStats().Set(3, 12)
+            );
 
-        player.Hit(5, out var _);
-        Assert.IsTrue(player.IsAlive());
+            player.Hit(30);
 
-        player.Hit(5, out var _);
-        Assert.IsFalse(player.IsAlive());
+            Assert.AreEqual(0, player.Health);
+        }
+
+        [Test]
+        public void NoAcceptNegativeDamage() {
+            var player = new Player(
+                3,
+                new TestStats().Set(3, 12)
+            );
+
+            player.Hit(-30);
+
+            Assert.AreEqual(12, player.Health);
+        }
+
+        [Test]
+        public void UpdateHealthWhenHill() {
+            var player = new Player(
+                3,
+                new TestStats().Set(3, 12)
+            );
+
+            player.Hill(2);
+
+            Assert.AreEqual(14, player.Health);
+        }
+
+        [Test]
+        public void NoAcceptNegativeHilling()
+        {
+            var player = new Player(
+                3,
+                new TestStats().Set(3, 12)
+            );
+
+            player.Hill(-2);
+
+            Assert.AreEqual(12, player.Health);
+        }
+
+        private class TestStats : Stats
+        {
+            readonly Dictionary<int, float> stats = new Dictionary<int, float>();
+
+            public float Get(int statId)
+            {
+                return this.stats[statId];
+            }
+
+            public TestStats Set(int statId, float value)  {
+                this.stats[statId] = value;
+
+                return this;
+            }
+        }
     }
 }

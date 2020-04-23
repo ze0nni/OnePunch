@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface Fighter
-{
-    float Stat(int statId);
+namespace Battle {
 
-    void Hit(float damage);
+    public interface Fighter
+    {
+        float Stat(int statId);
 
-    void Hill(float value);
+        void Hit(float damage);
+
+        void Hill(float value);
+    }
+
 }
